@@ -102,21 +102,29 @@ void list_archive_contents(const char *archive_filename) {
     size_t max_filename_len;
     fread(&max_filename_len, sizeof(max_filename_len), 1, archive_file);
 
-    printf("List of files in the archive '%s':\n", archive_filename);
+    printf("Listing contents of %s:\n", archive_filename);
     for (int i = 0; i < count; ++i) {
-        char *filename = calloc(max_filename_len, sizeof(char));
-        long filesize;
+        char *filename = malloc(max_filename_len);
+        if (filename == NULL) {
+            perror("Memory allocation failed");
+            fclose(archive_file);
+            exit(1);
+        }
 
-        fread(filename, sizeof(char), max_filename_len, archive_file); // NAME
+        long filesize;
+        fread(filename, sizeof(char), max_filename_len, archive_file);  // NAME
         fread(&filesize, sizeof(filesize), 1, archive_file);  // SIZE
 
-        printf("%s\n", filename);
+        printf("%-*s (Size: %ld bytes)\n", (int)max_filename_len - 1, filename, filesize);
+
+        fseek(archive_file, filesize, SEEK_CUR);
 
         free(filename);
     }
 
     fclose(archive_file);
 }
+
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
