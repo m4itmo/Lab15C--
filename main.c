@@ -9,7 +9,7 @@ void archive_files(int count, char *files[], const char *archive_filename) {
         exit(1);
     }
 
-    fwrite(&count, sizeof(count), 1, archive_file);
+    fwrite(&count, sizeof(count), 1, archive_file);  // LONGEST
 
     size_t max_filename_len = 0;
     for (int i = 0; i < count; ++i) {
@@ -58,7 +58,7 @@ void unarchive_files(const char *archive_filename) {
     fread(&count, sizeof(count), 1, archive_file);
 
     size_t max_filename_len;
-    fread(&max_filename_len, sizeof(max_filename_len), 1, archive_file);
+    fread(&max_filename_len, sizeof(max_filename_len), 1, archive_file);  // LONGEST
 
     for (int i = 0; i < count; ++i) {
         char *filename = malloc(max_filename_len);
